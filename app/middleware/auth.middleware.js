@@ -1,16 +1,18 @@
 const jwt = require("jsonwebtoken")
 const db = require("../../models")
-const {resGenerator} = require("../helper")
+const resGenerator = require("../helper")
 
 const authUser = async(req, res, next)=>{
     try{
-        //bearer ey......
+        
         const token = req.header("Authorization").replace("bearer ", "")
         const decoded = jwt.verify(token, process.env.jwtKey)
-        const { id, name } = decoded;
-        const userData = await db.User.findOne({where:{id:id , name:name}})
+        const {id} = decoded;
+        const userData = await db.User.findOne({where:{id:id }})
+        // res.send(userData)
         if(!userData) throw new Error("unauthorized")
         req.user = userData
+        console.log("user in auth " , req.user.id)
         req.token = token
         next()
     }

@@ -11,8 +11,6 @@ class user {
     
          
            const password = await bcrypt.hash(req.body.password , 10 )
-         
-
            const newuser = await db.User.create({...req.body , password})
            
            resGenerator(res, 200, true, newuser, "user added")
@@ -21,7 +19,7 @@ class user {
         catch (error) 
         {
             console.error('Error creating user:', error);
-            resGenerator(res, 500, false, e, "error in add")
+            resGenerator(res, 500, false, error, "error in add")
 
         }
         
@@ -62,9 +60,9 @@ class user {
 
     static edit = async (req, res)=>{
         try{
-          const user = await db.User.update(req.body , {where:{id:req.params.id}})
+          const user = await db.User.update(req.body , {where:{id:req.user.id}})
          
-          resGenerator(res, 200, true, user, "user updated successfully")
+          resGenerator(res, 200, true, user , "user updated successfully")
         }
         catch (error){
             console.error('error in update', error);
@@ -96,13 +94,27 @@ class user {
       else{
        const match = await bcrypt.compare(req.body.password , user.password)
        if (match) {
-        let token = await jwt.sign({id:user.id , name:user.name} , process.env.jwtKey )
+        let token = await jwt.sign({id:user.id } , process.env.jwtKey )
         const edituser = await db.User.update({...user , token} , {where:{id:user.id}})
         resGenerator(res, 200, true, token, "token Created")
        }
        else{
         resGenerator(res, 500, false, error, "email or password invalid")
        }
+      }
+    }
+
+    static logout = async (req , res) =>{
+      try{
+        // res.send ("ana hnaa")
+        console.log("ana hnaaaa")
+        const token = ""
+        // console.log(req.user )
+        const updateuser = await db.User.update({...req.user , token} , {where:{id:req.user.id}})
+        resGenerator(res, 200, true, token, "token removed")
+      }
+      catch(error){
+        resGenerator(res, 500, false, error, "error in logout")
       }
     }
 }

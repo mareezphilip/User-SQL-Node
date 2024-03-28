@@ -12,10 +12,11 @@ router.get("/getuser/:id" , usercontroller.getsingleuser)
 
 router.get("/getusers" ,  usercontroller.allusers)
 
-
-router.patch("/edit/:id"  , authUser , usercontroller.edit)
+router.patch("/edit"  , authUser , usercontroller.edit)
 
 router.delete("/delete/:id"  , usercontroller.delete )
 
 router.patch("/login" , usercontroller.login)
+
+router.patch("/logout" , authUser ,usercontroller.logout)
 module.exports =router
